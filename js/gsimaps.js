@@ -36,7 +36,8 @@ CONFIG.TOPMESSAGE = null;
 };*/
 
 // 初期位置
-CONFIG.DEFAULT = { CENTER : [35.3622222, 138.7313889],ZOOM : 5};
+//CONFIG.DEFAULT = { CENTER : [ 35.3622222, 138.7313889 ],ZOOM : 3 };
+CONFIG.DEFAULT = { CENTER: [ 35.942722, 136.198835 ], ZOOM: 5 };
 
 // レイヤータイプリスト
 CONFIG.LAYERTYPELIST = {
@@ -65,7 +66,7 @@ CONFIG.COCOTILESUBDOMAINS = [ 'cyberjapandata-t1', 'cyberjapandata-t2', 'cyberja
 CONFIG.USEACCESSCOUNTER = true;
 
 // リストにレイヤーのタイプを表示するかどうか（デバッグ用）
-CONFIG.VISIBLELAYERTYPE  = false;
+CONFIG.VISIBLELAYERTYPE  = true;
 
 // IE10,11のグレースケールを利用するか
 //CONFIG.USEIE1011GRAYSCALE = true;
@@ -537,6 +538,21 @@ CONFIG.FUNCMENU = {
 	]
 };
 
+// simplu 機能メニュー
+CONFIG.FUNCMENU = {
+	title : '埋込',
+	id : 'share_builtin',
+/*	children : [
+		{
+		id : 'share_builtin',
+		title : 'サイトに埋込',
+		arrow : true
+		}
+	]
+*/
+};
+
+
 // リスト
 CONFIG.DEFAULTIMAGE = {
 	FILEICON : "image/map/file.png",
@@ -568,8 +584,8 @@ CONFIG.LATLNGGRID = {
 		{ zoom : 14, grid : 60 * 2 },
 		{ zoom : 15, grid : 60 },
 		{ zoom : 16, grid : 30 },
-		{ zoom : 17, grid : 20 },
-		{ zoom : 18, grid : 10 },
+		{ zoom : 17, grid : 4 /*20*/ },
+		{ zoom : 18, grid : 2 /*10*/ },
 		{ zoom : 99, grid : 10 }
 	]
 };
@@ -1110,7 +1126,6 @@ function initialize()
 		visibleLayers : GSI.GLOBALS.queryParams.getLayers()
 	});
 	GSI.GLOBALS.layersJSON.on("load", function(e) {
-
  		GSI.GLOBALS.layerTreeDialog.setTree( e.tree );
 		var layers = [];
 		for ( var i=0; i<e.visibleLayers.length; i++ )
@@ -1120,6 +1135,7 @@ function initialize()
 			if ( l && l.info ){
 				layers.push( l.info );
 				GSI.GLOBALS.mapLayerList.append(l.info, true,l.hidden);
+				alert(l.info);
 			}
 		}
  		GSI.GLOBALS.cocoTileLayer.refresh();
@@ -1147,6 +1163,35 @@ function initialize()
 		GSI.GLOBALS.map, GSI.GLOBALS.baseLayer, GSI.GLOBALS.onoffObjects,
 		GSI.GLOBALS.mapLayerList, GSI.GLOBALS.layerTreeDialog
 	);
+	
+	// test by @taisukef
+	var map = GSI.GLOBALS.map;
+	var params = GSI.GLOBALS.queryParams.params;
+	
+	var iconurl = params.icon;
+	if (!iconurl) {
+//		iconurl = 'image/mapicon/search_result.png';
+		iconurl = "icon-megane.png";
+	}
+	var icon = L.icon({
+		iconUrl: iconurl,
+		iconSize: [ 64, 64 ],
+		iconAnchor: [32, 60 ]
+	});
+	var marker = L.marker([ 35.942722, 136.198835 ],{
+			title : "めがね会館",
+			icon : icon,
+	});
+	marker.bindPopup(
+		"<a href=http://www.megane.gr.jp/museum/>めがね会館</a><br>jig.jpは7F/8F(受付)です",
+		{
+			maxWidth:5000
+		}
+	);
+	var markerList = L.layerGroup();
+	markerList.addTo(map);
+	markerList.addLayer(marker);
+	
 }
 $(document).ready( initialize );
 
@@ -1749,7 +1794,6 @@ GSI.PageStateManager = L.Class.extend( {
 		if ( !options.noTile )
 		{
 			var tileList = this._mapLayerList.getTileList();
-
 			for ( var i=0; i<tileList.length; i++ )
 				tileIdList.push( tileList[i] );
 		}
@@ -3827,7 +3871,8 @@ GSI.MapMenu = L.Class.extend( {
 		this.rootItem = {
 			elem : elem,
 			children : [],
-			depth : 0
+			depth : 0,
+			id: treeConfig.id // add by @taisukef
 		};
 
 		elem.data( { 'data' : this.rootItem } );
@@ -5928,10 +5973,10 @@ GSI.SearchResultDialog = GSI.Dialog.extend( {
 
 				if ( !this._resultIcon )
 				{
-					this._resultIcon= L.icon({
+					this._resultIcon　= L.icon({
 						iconUrl: 'image/mapicon/search_result.png',
-					iconSize: [24, 24],
-					iconAnchor: [3, 22]
+						iconSize: [32, 32], // mod by @taisukef
+						iconAnchor: [5, 29] // mod by @taisukef
 					});
 				}
 				item._isActive = false;
@@ -14542,7 +14587,7 @@ GSI.BaseLayer = L.TileLayer.extend({
 
 	baseLayerList : null,
 	activeIndex : 0,
-	isGrayScale : false,
+	isGrayScale : true, // false, // mod by @taisukef
 	opacity : 1,
 	highQuality : false,
 	initialize: function (baseLayerList, defaultMap, options) {
