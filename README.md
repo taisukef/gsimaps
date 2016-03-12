@@ -1,4 +1,7 @@
-# gsimaps (地理院地図)
+# まいちず featuring gsimaps (地理院地図)
+国土地理院の <a href=https://github.com/gsi-cyberjapan/gsimaps>gsimaps</a> をベースに、<a href=http://fukuno.jig.jp/1326>福野泰介</a>がいじったものです。
+以下、オリジナルの README.md より
+
 <a href='https://github.com/gsi-cyberjapan/gsimaps/blob/gh-pages/README.en.md'>Tentative English translation</a> for this README is also available since 2015-03-12.
 
 ## hashtag
